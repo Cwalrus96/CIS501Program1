@@ -1,0 +1,5 @@
+﻿The database file will be pre-populated with user accounts, portfolios and stocks. 
+Each will have its own section of the file, starting with stocks, portfolios and accounts.
+each section will have a number, telling the program how many objects of that type it 
+should expect. After the number, each line will contain the information to construct 
+an object of the specified type, in a format that is readable by the program. 
