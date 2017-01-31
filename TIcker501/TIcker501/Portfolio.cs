@@ -11,6 +11,25 @@ namespace Ticker501
 {
     class Portfolio
     {
-        public List<Stock> stocks; 
+        public Dictionary<string, Stock> stocks; 
+
+        //This constructor will take no arguments, and will return an empty portfolio.
+        public Portfolio()
+        {
+            this.stocks = new Dictionary<string, Stock>();
+        }
+
+        //This constructor will take a dictionary of stocks as an argument, 
+        //and will create a portfolio containing those stocks
+        public Portfolio(Dictionary<string, Stock> stocks)
+        {
+            this.stocks = stocks; 
+        }
+
+        public override string ToString()
+        {
+            return stocks.ToString();
+        }
+
     }
 }
