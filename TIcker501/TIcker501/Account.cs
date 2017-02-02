@@ -18,18 +18,35 @@ namespace Ticker501
       
     class Account
     {
-        public string User;
-        public string accountNumber; 
+        public string user; 
         public static double tradeFee = 9.99;
         public static double transferFee = 4.99; 
-        public double Funds;
-        public Ticker501.Portfolio[] portfolios;
+        public double funds;
+        public Dictionary<string, Portfolio> portfolios;
 
 
-        //Constructor that will be used to create an Account Object
-        public Account()
+        //Constructor that will be used to create an Account Object by specifying all parameters
+        public Account(string user, double funds, Dictionary<string, Portfolio> portfolio )
         {
+            this.user = user;
+            this.funds = funds;
+            this.portfolios = portfolio;
+        }
 
+        //This constructor will create an Account object with an empty dictionary of portfolios
+        public Account(string user, double funds)
+        {
+            this.user = user;
+            this.funds = funds;
+            this.portfolios = new Dictionary<string, Portfolio>();
+        }
+
+        //This constructor will create an Account object with an empty dictionary and no money 
+        public Account(string user)
+        {
+            this.user = user;
+            this.funds = 0.00;
+            this.portfolios = new Dictionary<string, Portfolio>();
         }
 
         /*This function will allow users to enter an amount that they wish to deposit, and will
@@ -121,6 +138,20 @@ namespace Ticker501
         public void BuyStock()
         {
 
+        }
+
+        public void addPortfolio(string name, Portfolio p)
+        {
+            if (this.portfolios.Count == 3)
+            {
+                Console.WriteLine("User already has 3 portfolios - action failed");
+                return;
+            }
+            else
+            {
+                this.portfolios.Add(name, p);
+                return;
+            }
         }
     }
 }

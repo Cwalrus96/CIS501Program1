@@ -11,11 +11,13 @@ namespace Ticker501
 {
     class Portfolio
     {
-        public Dictionary<string, Stock> stocks; 
+        public Dictionary<string, Stock> stocks;
+        public string name;
 
-        //This constructor will take no arguments, and will return an empty portfolio.
-        public Portfolio()
+        //This constructor will take a name, and return a portfolio with an empty list of stocks.
+        public Portfolio(string name)
         {
+            this.name = name;
             this.stocks = new Dictionary<string, Stock>();
         }
 
@@ -24,6 +26,13 @@ namespace Ticker501
         public Portfolio(Dictionary<string, Stock> stocks)
         {
             this.stocks = stocks; 
+        }
+
+        //This function will allow the user to not only specify a stock to add, but also the amount of that stock to add
+        //and will add that amount of the stock to the portfolio.
+        public void AddStock(Stock s, int amount)
+        {
+
         }
 
         public override string ToString()
