@@ -22,7 +22,7 @@ namespace Ticker501
         {
             Dictionary<string, Stock> stockIndex = new Dictionary<string, Stock>();
             string line;
-            string countString;
+            string countString; 
             int count; 
             System.IO.StreamReader file = new System.IO.StreamReader(fileLocation);
             countString = file.ReadLine();
