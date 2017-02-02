@@ -143,9 +143,9 @@ namespace Ticker501
 
         static void Main(string[] args)
         {
-            Dictionary<string, Stock> stockIndex = RetrieveStockData("C:/CIS501GithubFiles/Ticker501/TIcker501/TIcker501/Ticker.txt");
-            Dictionary<string, Portfolio> portfolios = RetrievePortfolioData("C:/CIS501GithubFiles/Ticker501/TIcker501/TIcker501/Portfolios.txt", stockIndex);
-            Dictionary<string, Account> users = RetrieveAccountData("C:/CIS501GithubFiles/Ticker501/TIcker501/TIcker501/Accounts.txt", portfolios);
+            Dictionary<string, Stock> stockIndex = RetrieveStockData("Ticker.txt");
+            Dictionary<string, Portfolio> portfolios = RetrievePortfolioData("Portfolios.txt", stockIndex);
+            Dictionary<string, Account> users = RetrieveAccountData("Accounts.txt", portfolios);
             Account currentUser;
             bool exit = false;
             bool loggedIn = false;
