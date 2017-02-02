@@ -22,12 +22,12 @@ namespace Ticker501
         {
             Dictionary<string, Stock> stockIndex = new Dictionary<string, Stock>();
             string line;
-            string countString; 
-            int count; 
+            string countString;
+            int count;
             System.IO.StreamReader file = new System.IO.StreamReader(fileLocation);
             countString = file.ReadLine();
             count = Int32.Parse(countString);
-            for(int i = 0; i < count; i ++)
+            for (int i = 0; i < count; i++)
             {
                 line = file.ReadLine();
                 string[] words = line.Split('-');
@@ -39,7 +39,7 @@ namespace Ticker501
 
         //This function will be called after retrieving all stocks, and will be used to retrieve all 
         //Portfolio information from the database (text files)
-        public static Dictionary<string, Portfolio> RetrievePortfolioData(string fileLocation,Dictionary<string, Stock> s)
+        public static Dictionary<string, Portfolio> RetrievePortfolioData(string fileLocation, Dictionary<string, Stock> s)
         {
             Dictionary<string, Portfolio> portfolios = new Dictionary<string, Portfolio>();
             string line;
@@ -54,22 +54,23 @@ namespace Ticker501
                 string[] words = line.Split(':');
                 Portfolio p = new Portfolio(words[0]);
                 string[] subWords = words[1].Split(';');
-                for(int j = 0; j < subWords.Length; j ++)
+                for (int j = 0; j < subWords.Length; j++)
                 {
                     string[] subSubWords = subWords[j].Split('-');
-                    if (s.ContainsKey(subSubWords[0])) {
+                    if (s.ContainsKey(subSubWords[0]))
+                    {
                         p.AddStock(s[subSubWords[0]], Int32.Parse(subSubWords[1]));
                     }
                 }
                 portfolios.Add(p.name, p);
-                
+
             }
             return portfolios;
         }
 
         //This function will be called after calling the portfolio retrieval function, and will be used to 
         //retrieve all account data from the database (text files)
-        public static Dictionary<string, Account> RetrieveAccountData(string fileLocation, Dictionary<string,Portfolio> portfolios)
+        public static Dictionary<string, Account> RetrieveAccountData(string fileLocation, Dictionary<string, Portfolio> portfolios)
         {
             Dictionary<string, Account> users = new Dictionary<string, Account>();
             string line;
@@ -86,9 +87,9 @@ namespace Ticker501
                 double funds = double.Parse(words[1].Substring(1));
                 string[] subWords = words[2].Split('-');
                 Account a = new Ticker501.Account(username, funds);
-                for(int j = 0; j < subWords.Length; j ++)
+                for (int j = 0; j < subWords.Length; j++)
                 {
-                    if(portfolios.ContainsKey(subWords[j]))
+                    if (portfolios.ContainsKey(subWords[j]))
                     {
                         a.addPortfolio(subWords[j], portfolios[subWords[j]]);
                     }
@@ -110,9 +111,9 @@ namespace Ticker501
                 Console.WriteLine("New User (1)");
                 Console.WriteLine("Returning User (0)");
                 input = Console.ReadLine();
-            
-}
-            if (Int32.Parse(input) == 1) //Not sure why not updating github, making a change
+
+            }
+            if (Int32.Parse(input) == 1)
 
             {
                 Console.WriteLine("Choose a UserName");
@@ -126,43 +127,93 @@ namespace Ticker501
             {
                 Console.WriteLine("Type your Username");
                 input = Console.ReadLine();
-                while(!accounts.ContainsKey(input))
+                while (!accounts.ContainsKey(input))
                 {
                     Console.WriteLine("That Username does not exist. Type your username, or type 0 to exit");
                     input = Console.ReadLine();
                     int number;
-                    if ((Int32.TryParse(input, out number) == false) && (Int32.Parse(input) == 0) )
+                    if ((Int32.TryParse(input, out number) == false) && (number == 0))
                     {
                         Console.WriteLine("Exitting....");
                         return null;
                     }
                 }
             }
+            Console.WriteLine("Welcome back, " + input + '!');
             return accounts[input];
         }
+
+        
 
         static void Main(string[] args)
         {
             Dictionary<string, Stock> stockIndex = RetrieveStockData("Ticker.txt");
             Dictionary<string, Portfolio> portfolios = RetrievePortfolioData("Portfolios.txt", stockIndex);
             Dictionary<string, Account> users = RetrieveAccountData("Accounts.txt", portfolios);
-            Account currentUser;
+            Account currentUser = null;
             bool exit = false;
             bool loggedIn = false;
             string input;
             while (exit == false)
             {
-                if(loggedIn == false)
+                if (loggedIn == false)
                 {
                     currentUser = LogInAccount(users);
                     if (currentUser == null) return;
                     loggedIn = true;
                 }
+                int number;
+                //Print menu options
                 Console.WriteLine("Well, We made it this far!");
                 Console.WriteLine("Please Select an action!");
-                Console.ReadLine();
+                Console.WriteLine("Buy/Sell Stocks (1)");
+                Console.WriteLine("Transfer Funds (2)");
+                Console.WriteLine("View Accounts/Portfolios (3) ");
+                Console.WriteLine("Create/Delete Portfolios (4) ");
+                Console.WriteLine("Log out (5)");
+
+                input = Console.ReadLine();
+                while ((Int32.TryParse(input, out number) == false) && (number > 0) && (number < 6))
+                {
+                    Console.WriteLine("Please Select a valid Input");
+                    input = Console.ReadLine();
+                }
+
+                if (number == 1)
+                {
+                    Console.WriteLine("    Would you like to buy(1) or sell (2)?");
+                    input = Console.ReadLine();
+                    while ((Int32.TryParse(input, out number) == false) && (!(number == 0) && !(number == 1)))
+                    {
+                        Console.WriteLine("Please Select a valid Input");
+                        input = Console.ReadLine();
+                    }
+                    if(input == 1)
+                    {
+                        Console.WriteLine("What kind of stock would you like to buy? Type the stock ticker to select a stock, or type 1 to view stocks");
+                        Account.buyStocks();
+                    }
+                }
+                else if (number == 2)
+                {
+
+                }
+                else if (number == 3)
+                {
+
+                }
+                else if (number == 4)
+                {
+
+                }
+                else
+                {
+
+                }
+
+
             };
-            
+
         }
     }
 }

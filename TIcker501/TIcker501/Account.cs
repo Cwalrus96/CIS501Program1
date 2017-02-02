@@ -135,7 +135,7 @@ namespace Ticker501
         /* This function will be used to purchase a certain amount of stock, and add it to the 
          * portfolio
          */
-        public void BuyStock()
+        public void BuyStock(Portfolio p, Stock s, int amount)
         {
 
         }
