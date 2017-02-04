@@ -11,20 +11,20 @@ namespace Ticker501
 {
     class Stock
     {
-        string ticker;
-        string companyName;
-        double price;
+        public string ticker;
+        public string companyName;
+        public double price;
 
         public Stock(string ticker, string companyName, double price)
         {
             this.ticker = ticker;
             this.companyName = companyName;
-            this.price = price; 
+            this.price = price;
         }
 
         public override string ToString()
         {
-            return "Ticker:" + this.ticker + " Company Name:" + this.companyName + " price: $" + price; 
+            return "Ticker:" + this.ticker + " Company Name:" + this.companyName + " price: $" + price;
         }
 
     }

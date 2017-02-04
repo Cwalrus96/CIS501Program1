@@ -12,6 +12,7 @@ namespace Ticker501
     class Portfolio
     {
         public Dictionary<string, Stock> stocks;
+        public Dictionary<string, int> amounts;
         public string name;
 
         //This constructor will take a name, and return a portfolio with an empty list of stocks.
@@ -19,6 +20,7 @@ namespace Ticker501
         {
             this.name = name;
             this.stocks = new Dictionary<string, Stock>();
+            this.amounts = new Dictionary<string, int>();
         }
 
         //This constructor will take a dictionary of stocks as an argument, 
@@ -28,16 +30,44 @@ namespace Ticker501
             this.stocks = stocks; 
         }
 
-        //This function will allow the user to not only specify a stock to add, but also the amount of that stock to add
+        public void ViewPortfolio()
+        {
+            Console.WriteLine("Portfolio Name: " + name);
+            Console.WriteLine("Total Number of stocks: " + this.stocks.Count);
+            Console.WriteLine("Stock Information:");
+            int totalNumber = 0;
+            double totalValue = 0.0;
+            foreach(string s in this.stocks.Keys)
+            {
+                totalNumber += this.amounts[s];
+                totalValue += (this.stocks[s].price * this.amounts[s]);
+            }
+            foreach (String s in this.stocks.Keys)
+            {
+                Console.WriteLine(this.stocks[s]);
+                Console.WriteLine("Amount: " + this.amounts[s] + " \n Total Value of these stocks $" +
+                    (this.amounts[s] * this.stocks[s].price) + " \n Percent of total shares: " + (((double)this.amounts[s]) / ((double)totalNumber)) * 100 +
+                    "% \n Percent of total Value of Portfolio: " + (((((double) this.amounts[s]) * ((double) this.stocks[s].price)) / ((double) totalValue)) * 100) + "%");
+            }
+        }
+
+        //This function will allow the username to not only specify a stock to add, but also the amount of that stock to add
         //and will add that amount of the stock to the portfolio.
         public void AddStock(Stock s, int amount)
         {
-
+            if (this.stocks.ContainsKey(s.ticker)) {
+                this.amounts[s.ticker] += amount;
+            }
+            else
+            {
+                this.stocks.Add(s.ticker, s);
+                this.amounts.Add(s.ticker, amount);
+            }
         }
 
         public override string ToString()
         {
-            return stocks.ToString();
+            return "Portfolio:" + name;
         }
 
     }
