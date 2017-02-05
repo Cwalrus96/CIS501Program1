@@ -15,18 +15,18 @@ namespace Ticker501
      * and see how different stocks make up their portfolios. Users will also be able to buy new stocks,
      * and add and withdraw funds from their account. 
      */
-      
+
     class Account
     {
-        public string username; 
+        public string username;
         public static double tradeFee = 9.99;
-        public static double transferFee = 4.99; 
+        public static double transferFee = 4.99;
         public double funds;
         public Dictionary<string, Portfolio> portfolios;
 
 
         //Constructor that will be used to create an Account Object by specifying all parameters
-        public Account(string user, double funds, Dictionary<string, Portfolio> portfolio )
+        public Account(string user, double funds, Dictionary<string, Portfolio> portfolio)
         {
             this.username = user;
             this.funds = funds;
@@ -44,6 +44,7 @@ namespace Ticker501
         //This constructor will create an Account object with an empty dictionary and no money 
         public Account(string user)
         {
+           
             this.username = user;
             this.funds = 0.00;
             this.portfolios = new Dictionary<string, Portfolio>();
@@ -59,7 +60,7 @@ namespace Ticker501
 
             this.funds += amount - Account.transferFee;
         }
-        
+
         /*This function will allow users to remove funds from their account. The username cannot withdraw 
          * an ammount from the account greater than their balance + the value of selling all of their 
          * stocks - the flat transfer fee. If the amount that the username is requesting to withdraw is 
@@ -72,18 +73,32 @@ namespace Ticker501
         {
             this.funds -= (amount + Account.transferFee);
 
-        } 
+        }
 
-       
+
         /*This private function will be called by the AccountBalance function, and will
          * provide the positions balance of the account
          */
         public void PositionsBalance()
         {
-            foreach(string s in this.portfolios.Keys )
+            double totalValue = 0;
+            int totalNumber = 0;
+            foreach (string p in this.portfolios.Keys)
             {
-               this.portfolios[s].ViewPortfolio();
+                foreach (string s in this.portfolios[p].stocks.Keys)
+                {
+                    totalNumber += this.portfolios[p].amounts[s];
+                    totalValue += (this.portfolios[p].stocks[s].price * this.portfolios[p].amounts[s]);
+                }
             }
+            foreach (string s in this.portfolios.Keys)
+            {
+                this.portfolios[s].ViewPortfolio();
+            }
+            Console.WriteLine("Total Number of Stocks: " + totalNumber);
+            Console.WriteLine("Total Stock Value in Account: $" + totalValue);
+            Console.WriteLine("Account Cash Value: $" + this.funds);
+            Console.WriteLine("Total Account Value (Cash + Stocks: $" + (totalValue + this.funds));
         }
 
         /*This function will be called to create a new portfolio and add it to the account's 
@@ -98,14 +113,14 @@ namespace Ticker501
         /*This function will be called to delete an existing portfolio, and sell all of it's 
          * positions in a single transaction. 
          */
-         public void DeletePortfolio(string name)
+        public void DeletePortfolio(string name)
         {
-            if(this.portfolios.ContainsKey(name))
+            if (this.portfolios.ContainsKey(name))
             {
                 //TODO: Make sure removing a portfolio sells all stocks contained within that portfolio
                 this.portfolios.Remove(name);
-                double totalAmount = 0; 
-                foreach(string s in this.portfolios[name].stocks.Keys)
+                double totalAmount = 0;
+                foreach (string s in this.portfolios[name].stocks.Keys)
                 {
                     totalAmount += (this.portfolios[name].stocks[s].price) * this.portfolios[name].amounts[s];
                 }
@@ -116,7 +131,7 @@ namespace Ticker501
             }
             else
             {
-                Console.WriteLine("This username does not have a portfolio named " + name +  ". Action failed");
+                Console.WriteLine("This username does not have a portfolio named " + name + ". Action failed");
             }
 
         }
@@ -128,14 +143,14 @@ namespace Ticker501
         {
             //See if username has enough funds to purchase the selected stocks
             double price = s.price * amount;
-            
-            if(this.funds < price + Account.tradeFee)
+
+            if (this.funds < price + Account.tradeFee)
             {
                 Console.WriteLine("You do not have enough funds to purchase these stocks.");
-                    return false; 
+                return false;
             }
             //see if username already owns stocks of that type 
-            if(p.stocks.ContainsKey(s.ticker))
+            if (p.stocks.ContainsKey(s.ticker))
             {
                 p.amounts[s.ticker] += amount;
             }
@@ -152,7 +167,7 @@ namespace Ticker501
         //This function will be used to sell a certain amount of stock, and add the funds to your account balance
         public bool SellStock(Portfolio p, Stock s, int amount)
         {
-            if(amount < p.amounts[s.ticker])
+            if (amount < p.amounts[s.ticker])
             {
                 p.amounts[s.ticker] -= amount;
                 Console.WriteLine("Sold " + amount + " shares of " + s.companyName + " stock.");
@@ -189,7 +204,7 @@ namespace Ticker501
             else
             {
                 //Console.WriteLine("Portfolio Successfully Added!");
-                Console.WriteLine("Portfolio " + name + " successfully added"); 
+                Console.WriteLine("Portfolio " + name + " successfully added");
                 this.portfolios.Add(name, p);
                 return;
             }

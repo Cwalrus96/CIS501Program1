@@ -33,19 +33,32 @@ namespace Ticker501
         {
             Dictionary<string, Stock> stockIndex = new Dictionary<string, Stock>();
             string line;
-            string countString;
-            int count;
-            System.IO.StreamReader file = new System.IO.StreamReader(fileLocation);
-            countString = file.ReadLine();
-            count = Int32.Parse(countString);
-            for (int i = 0; i < count; i++)
+            using (System.IO.StreamReader file = new System.IO.StreamReader(fileLocation))
             {
-                line = file.ReadLine();
-                string[] words = line.Split('-');
-                Stock s = new Ticker501.Stock(words[0], words[1], double.Parse(words[2].Substring(1, words[2].Length - 1)));
-                stockIndex.Add(words[0], s);
+                while ((line = file.ReadLine()) != null)
+                {
+                    string[] words = line.Split('-');
+                    Stock s = new Ticker501.Stock(words[0], words[1], double.Parse(words[2].Substring(1, words[2].Length - 1)));
+                    stockIndex.Add(words[0], s);
+                }
             }
             return stockIndex;
+        }
+
+
+        /*This function will be called at the end of the program if the user properly exits the program by following the 
+         * printed instructions on the screen. This function will store all stocks into a file, from which they can then 
+         * be called at the beginning of the next program, and will save all changes made.
+         */
+        public static void StoreStockData()
+        {
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter("Ticker.txt"))
+            {
+                foreach (string s in Program.stockIndex.Keys)
+                {
+                    file.WriteLine(stockIndex[s].ticker + "-" + stockIndex[s].companyName + "-$" + stockIndex[s].price);
+                }
+            }
         }
 
         //This function will be called after retrieving all stocks, and will be used to retrieve all 
@@ -54,29 +67,47 @@ namespace Ticker501
         {
             Dictionary<string, Portfolio> portfolios = new Dictionary<string, Portfolio>();
             string line;
-            string countString;
-            int count;
-            System.IO.StreamReader file = new System.IO.StreamReader(fileLocation);
-            countString = file.ReadLine();
-            count = Int32.Parse(countString);
-            for (int i = 0; i < count; i++)
+            using (System.IO.StreamReader file = new System.IO.StreamReader(fileLocation))
             {
-                line = file.ReadLine();
-                string[] words = line.Split(':');
-                Portfolio p = new Portfolio(words[0]);
-                string[] subWords = words[1].Split(';');
-                for (int j = 0; j < subWords.Length; j++)
+                while ((line = file.ReadLine()) != null)
                 {
-                    string[] subSubWords = subWords[j].Split('-');
-                    if (s.ContainsKey(subSubWords[0]))
+                    string[] words = line.Split(':');
+                    Portfolio p = new Portfolio(words[0]);
+                    string[] subWords = words[1].Split(';');
+                    for (int j = 0; j < subWords.Length; j++)
                     {
-                        p.AddStock(s[subSubWords[0]], Int32.Parse(subSubWords[1]));
+                        string[] subSubWords = subWords[j].Split('-');
+                        if (s.ContainsKey(subSubWords[0]))
+                        {
+                            p.AddStock(s[subSubWords[0]], Int32.Parse(subSubWords[1]));
+                        }
                     }
-                }
-                portfolios.Add(p.name, p);
+                    portfolios.Add(p.name, p);
 
+                }
             }
             return portfolios;
+        }
+
+        /*If the program is closed properly by following the printed instructions on the screen, this function will 
+         * be called before the program exits. This function will store all portfolios into the Portfolios.txt file
+         * where they can then be retrieved in subsequent program calls
+         */
+        public static void StorePortfolioData()
+        {
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter("Portfolios.txt"))
+            {
+                foreach (string p in Program.portfolios.Keys)
+                {
+                    file.Write(portfolios[p].name + ":");
+                    foreach (string s in portfolios[p].stocks.Keys)
+                    {
+                        file.Write(portfolios[p].stocks[s].ticker + "-" + portfolios[p].amounts[s] + ";");
+                    }
+                    file.Write("\n");
+                }
+            }
+
         }
 
         //This function will be called after calling the portfolio retrieval function, and will be used to 
@@ -85,29 +116,47 @@ namespace Ticker501
         {
             Dictionary<string, Account> users = new Dictionary<string, Account>();
             string line;
-            string countString;
-            int count;
-            System.IO.StreamReader file = new System.IO.StreamReader(fileLocation);
-            countString = file.ReadLine();
-            count = Int32.Parse(countString);
-            for (int i = 0; i < count; i++)
+            using (System.IO.StreamReader file = new System.IO.StreamReader(fileLocation))
             {
-                line = file.ReadLine();
-                string[] words = line.Split(':');
-                string username = words[0];
-                double funds = double.Parse(words[1].Substring(1));
-                string[] subWords = words[2].Split('-');
-                Account a = new Ticker501.Account(username, funds);
-                for (int j = 0; j < subWords.Length; j++)
+                while ((line = file.ReadLine()) != null)
                 {
-                    if (portfolios.ContainsKey(subWords[j]))
+                    string[] words = line.Split(':');
+                    string username = words[0];
+                    double funds = double.Parse(words[1].Substring(1));
+                    string[] subWords = words[2].Split('-');
+                    Account a = new Ticker501.Account(username, funds);
+                    for (int j = 0; j < subWords.Length; j++)
                     {
-                        a.addPortfolio(subWords[j], portfolios[subWords[j]]);
+                        if (portfolios.ContainsKey(subWords[j]))
+                        {
+                            a.addPortfolio(subWords[j], portfolios[subWords[j]]);
+                        }
                     }
+                    users.Add(username, a);
                 }
-                users.Add(username, a);
             }
             return users;
+        }
+
+        /*If the program is closed properly by following the printed instructions on the screen, this function will 
+         * be called before the program exits. This function will store all portfolios into the Portfolios.txt file
+         * where they can then be retrieved in subsequent program calls
+         */
+        public static void StoreAccountData()
+        {
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter("Accounts.txt"))
+            {
+                foreach (string u in Program.users.Keys)
+                {
+                    file.Write(users[u].username + ":$" + users[u].funds + ":");
+                    foreach (string p in users[u].portfolios.Keys)
+                    {
+                        file.Write(users[u].portfolios[p].name + "-");
+                    }
+                    file.Write("\n");
+                }
+            }
+
         }
 
         //This function will be called at the beginning of the console application in order to "Log in" 
@@ -147,6 +196,7 @@ namespace Ticker501
                     if ((Int32.TryParse(input, out number) == true) && (number == 0))
                     {
                         Console.WriteLine("Exitting....");
+                        return;
                     }
                 }
             }
@@ -280,13 +330,13 @@ namespace Ticker501
         {
             int max;
             int min;
-            Random r = new Random(); 
-            if(m == MarketVolatility.HIGH)
+            Random r = new Random();
+            if (m == MarketVolatility.HIGH)
             {
                 max = 15;
-                min = 3; 
+                min = 3;
             }
-            else if(m == MarketVolatility.MID)
+            else if (m == MarketVolatility.MID)
             {
                 max = 8;
                 min = 2;
@@ -294,15 +344,16 @@ namespace Ticker501
             else
             {
                 max = 4;
-                min = 1; 
+                min = 1;
             }
-            foreach(string s in Program.stockIndex.Keys)
+            foreach (string s in Program.stockIndex.Keys)
             {
-                double increment = ((double) r.Next(min, max) / 100) + 1;
-                if(r.Next(1,10) > 5)
+                double increment = ((double)r.Next(min, max) / 100);
+                if (r.Next(1, 10) > 5)
                 {
                     increment *= -1;
                 }
+                increment++;
                 Program.stockIndex[s].price *= increment;
             }
             Console.WriteLine("Finished running simulator");
@@ -572,27 +623,28 @@ namespace Ticker501
                     Console.WriteLine("This Simulator can be run at varying different levels of market volatility. Choose a volatility level");
                     Console.WriteLine("High Volatility (1), Medium Volatility (2), Low Volatility (3) or exit (0) ");
                     input = Console.ReadLine();
-                    while ((Int32.TryParse(input, out number) == false) || (number > 3) || (number < 0)) {
+                    while ((Int32.TryParse(input, out number) == false) || (number > 3) || (number < 0))
+                    {
                         Console.WriteLine("Please pick an option");
                     }
                     //User chose 1 - high volatility
-                    if(number == 1)
+                    if (number == 1)
                     {
                         Program.RunSimulator(MarketVolatility.HIGH);
                     }
 
                     //User chose 2 - medium volatility
-                    if(number == 2)
+                    if (number == 2)
                     {
                         Program.RunSimulator(MarketVolatility.MID);
-                    } 
+                    }
                     //User chose 3 - low volatility 
-                    if(number == 3)
+                    if (number == 3)
                     {
                         Program.RunSimulator(MarketVolatility.LOW);
                     }
                     //User chose 0 - exit
-                    if(number == 0)
+                    if (number == 0)
                     {
                         menu = 7;
                     }
@@ -609,7 +661,15 @@ namespace Ticker501
                 while (menu == 0)
                 {
                     //Save all data to files, then close program
+
                     exit = true;
+                    Console.WriteLine("Storing Data...");
+                    Program.StoreStockData();
+                    Program.StorePortfolioData();
+                    Program.StoreAccountData();
+                    Console.WriteLine("Data stored Successfully");
+                    Console.WriteLine("Press Enter to Close Program");
+                    Console.ReadLine();
                     Console.WriteLine("Closing Program.....");
                     menu = -1;
                 }
