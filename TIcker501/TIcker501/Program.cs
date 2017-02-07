@@ -79,7 +79,7 @@ namespace Ticker501
                         string[] subSubWords = subWords[j].Split('-');
                         if (s.ContainsKey(subSubWords[0]))
                         {
-                            p.AddStock(s[subSubWords[0]], Int32.Parse(subSubWords[1]));
+                            p.AddStock(s[subSubWords[0]], Int32.Parse(subSubWords[1]), Double.Parse(subSubWords[2]));
                         }
                     }
                     portfolios.Add(p.name, p);
@@ -248,7 +248,7 @@ namespace Ticker501
                                 Console.WriteLine("Please type the name of the Portfolio you wish to add the stocks to");
                                 input = Console.ReadLine();
                             }
-                            if (currentUser.BuyStock(currentUser.portfolios[input], stockIndex[stockName], number))
+                            if (currentUser.BuyStock(currentUser.portfolios[input], stockIndex[stockName], number, stockIndex[stockName].price))
                             {
                                 Console.WriteLine("Transaction Completed! purchased " + number + " shares of " + stockIndex[stockName].companyName + " stock.");
                                 Console.WriteLine("New Account Balance = " + currentUser.funds + ".");

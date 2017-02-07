@@ -83,12 +83,14 @@ namespace Ticker501
         {
             double totalValue = 0;
             int totalNumber = 0;
+            double totalGains = 0; 
             foreach (string p in this.portfolios.Keys)
             {
                 foreach (string s in this.portfolios[p].stocks.Keys)
                 {
                     totalNumber += this.portfolios[p].amounts[s];
                     totalValue += (this.portfolios[p].stocks[s].price * this.portfolios[p].amounts[s]);
+                    totalGains += ((this.portfolios[p].stocks[s].price) - (this.portfolios[p].startingPrices[s])) * this.portfolios[p].amounts[s];
                 }
             }
             foreach (string s in this.portfolios.Keys)
@@ -98,7 +100,8 @@ namespace Ticker501
             Console.WriteLine("Total Number of Stocks: " + totalNumber);
             Console.WriteLine("Total Stock Value in Account: $" + totalValue);
             Console.WriteLine("Account Cash Value: $" + this.funds);
-            Console.WriteLine("Total Account Value (Cash + Stocks: $" + (totalValue + this.funds));
+            Console.WriteLine("Total Account Value (Cash + Stocks) : $" + (totalValue + this.funds));
+            Console.WriteLine("Total Gains/Losses: $" + totalGains);
         }
 
         /*This function will be called to create a new portfolio and add it to the account's 
@@ -139,7 +142,7 @@ namespace Ticker501
         /* This function will be used to purchase a certain amount of stock, and add it to the 
          * portfolio
          */
-        public bool BuyStock(Portfolio p, Stock s, int amount)
+        public bool BuyStock(Portfolio p, Stock s, int amount, double startingPrice)
         {
             //See if username has enough funds to purchase the selected stocks
             double price = s.price * amount;
@@ -150,6 +153,7 @@ namespace Ticker501
                 return false;
             }
             //see if username already owns stocks of that type 
+            /*
             if (p.stocks.ContainsKey(s.ticker))
             {
                 p.amounts[s.ticker] += amount;
@@ -159,8 +163,9 @@ namespace Ticker501
                 p.stocks.Add(s.ticker, s);
                 p.amounts.Add(s.ticker, amount);
             }
+            */
             this.funds -= price + Account.tradeFee;
-            p.AddStock(s, amount);
+            p.AddStock(s, amount, startingPrice );
             return true;
         }
 
@@ -180,6 +185,7 @@ namespace Ticker501
             {
                 p.amounts.Remove(s.ticker);
                 p.stocks.Remove(s.ticker);
+                p.startingPrices.Remove(s.ticker);
                 Console.WriteLine("Sold all of your " + s.companyName + " stock.");
                 double money = (s.price * amount) - Account.tradeFee;
                 Console.WriteLine("Added $" + money + " to your account");
